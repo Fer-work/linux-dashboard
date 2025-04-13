@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include('shared/metadata') %>
+
+  <body class="d-flex flex-column min-vh-100">
+    <%- include('shared/navbar') %>
+
+    <main class="container justify-content-center flex-grow-1">
+      <div class="m-3">
+        <div class="d-flex flex">
+          <h2 class="me-auto">System Monitor</h2>
+
+          <div class="card">
+            <div class="card-header">System Stats</div>
+            <div class="card-body">
+              <p>
+                <strong>Uptime:</strong> <span id="uptime">Loading...</span>
+                <strong>Total Memory:</strong>
+                <span id="totalMem">Loading...</span>
+                <strong>Free Memory:</strong>
+                <span id="freeMem">Loading...</span> <strong>Load Avg:</strong>
+                <span id="load">Loading...</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      async function fetchStats() {
+        const res = await fetch("/api/system");
+        const data = await res.json();
+
+        document.getElementById("uptime").textContent = data.uptime + " sec";
+        document.getElementById("totalMem").textContent =
+          (data.totalMem / (1024 * 1024 * 1024)).toFixed(2) + " GB";
+        document.getElementById("freeMem").textContent =
+          (data.freeMem / (1024 * 1024 * 1024)).toFixed(2) + " GB";
+        document.getElementById("load").textContent =
+          data.load.map((n) => n.toFixed(2)).join(", ") + " sec";
+      }
+
+      fetchStats();
+      setInterval(fetchStats, 5000);
+    </script>
+
+    <%- include('shared/footer') %>
+  </body>
+</html>
